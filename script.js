@@ -1,30 +1,30 @@
-const video = document.getElementById("video");
+const video=document.getElementById("video");
 
-const glove = document.getElementById("glove");
-const scanner = document.getElementById("scanner");
-const blast = document.getElementById("blast");
+const glove=document.getElementById("glove");
+const scanner=document.getElementById("scanner");
 
-const energy = document.getElementById("energy");
-const target = document.getElementById("target");
-const mode = document.getElementById("mode");
+const blast=document.getElementById("blast");
+const laser=document.getElementById("laser");
+const shield=document.getElementById("shield");
 
-
-let sx = 0;
-let sy = 0;
-
-let smoothSize = 1;
-
-let oldSize = 0;
-
-let power = 0;
+const mode=document.getElementById("mode");
+const energy=document.getElementById("energy");
 
 
+let sx=0;
+let sy=0;
 
-const hands = new Hands({
+let smoothSize=1;
 
-locateFile: (file) =>
+let charge=0;
 
-`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+
+
+const hands =
+new Hands({
+
+locateFile:f =>
+`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
 
 });
 
@@ -32,76 +32,69 @@ locateFile: (file) =>
 
 hands.setOptions({
 
-maxNumHands: 1,
+maxNumHands:1,
 
-modelComplexity: 1,
+modelComplexity:1,
 
-minDetectionConfidence: 0.8,
+minDetectionConfidence:.8,
 
-minTrackingConfidence: 0.8
+minTrackingConfidence:.8
 
 });
 
 
 
-hands.onResults((data)=>{
+
+hands.onResults((res)=>{
 
 
-if(data.multiHandLandmarks &&
-data.multiHandLandmarks.length){
+if(res.multiHandLandmarks &&
+res.multiHandLandmarks.length){
 
 
-let h =
-data.multiHandLandmarks[0];
+let h=res.multiHandLandmarks[0];
 
 
-// finger detection
+// finger count
 
-let fingers = 0;
+let fingers=0;
 
 
-if(h[8].y < h[6].y)
+if(h[8].y<h[6].y)
 fingers++;
 
-
-if(h[12].y < h[10].y)
+if(h[12].y<h[10].y)
 fingers++;
 
-
-if(h[16].y < h[14].y)
+if(h[16].y<h[14].y)
 fingers++;
 
-
-if(h[20].y < h[18].y)
+if(h[20].y<h[18].y)
 fingers++;
 
 
 // positions
 
-let palm = h[9];
 
-let wrist = h[0];
-
-
-let x =
-(1-palm.x) * innerWidth;
+let palm=h[9];
+let wrist=h[0];
 
 
-let y =
-palm.y * innerHeight;
+let x=(1-palm.x)*innerWidth;
 
-
-// smooth movement
-
-sx += (x-sx)*0.15;
-
-sy += (y-sy)*0.15;
+let y=palm.y*innerHeight;
 
 
 
-let size =
+sx+=(x-sx)*0.18;
+
+sy+=(y-sy)*0.18;
+
+
+
+let size=
 Math.abs(wrist.y-h[12].y)
-*750;
+*800;
 
 
 
@@ -110,206 +103,228 @@ smoothSize +=
 
 
 
-// glove
-
-glove.style.display =
-"block";
+// hand angle rotation
 
 
-scanner.style.display =
-"block";
+let angle =
+
+Math.atan2(
+
+h[5].y-h[17].y,
+
+h[5].x-h[17].x
+
+)*60;
 
 
 
-glove.style.left =
+// show glove
+
+
+glove.style.display="block";
+
+scanner.style.display="block";
+
+
+
+glove.style.left=
 sx-smoothSize/2+"px";
 
 
-glove.style.top =
+glove.style.top=
 sy-smoothSize/1.6+"px";
 
 
 
-glove.style.transform =
+glove.style.transform=
 
-`scale(${smoothSize/230})`;
-
-
-
-// scanner follow
-
-
-scanner.style.left =
-sx-150+"px";
-
-
-scanner.style.top =
-sy-150+"px";
-
-
-
-// energy charge
-
-
-power++;
-
-if(power>100)
-power=100;
-
-
-energy.innerHTML =
-"ENERGY "+power+"%";
+`scale(${smoothSize/240})
+ rotate(${angle}deg)`;
 
 
 
 
-// gesture modes
+// scanner
 
 
-if(fingers >= 4){
+scanner.style.left=
+sx-160+"px";
 
 
-mode.innerHTML =
+scanner.style.top=
+sy-160+"px";
+
+
+
+// reset weapons
+
+
+blast.style.display="none";
+
+laser.style.display="none";
+
+shield.style.display="none";
+
+
+
+
+// 🖐 REPULSOR MODE
+
+
+if(fingers>=4){
+
+
+mode.innerHTML=
 "MODE: REPULSOR ⚡";
 
 
-glove.className="";
+charge+=3;
 
 
-target.style.display =
-"none";
+if(charge>100)
+charge=100;
 
 
-}
-
-
-
-else if(fingers == 0){
-
-
-mode.innerHTML =
-"MODE: ARMOR LOCK 🦾";
-
-
-target.style.display =
-"block";
-
-
-target.style.left =
-sx-100+"px";
-
-
-target.style.top =
-sy-100+"px";
-
-
-}
+energy.innerHTML=
+"ENERGY "+charge+"%";
 
 
 
-else if(fingers == 2){
+if(charge>=100){
 
 
-mode.innerHTML =
-"MODE: HOLOGRAM 🔵";
+blast.style.display="block";
 
 
-glove.className =
-"holo";
+blast.style.left=sx+"px";
+
+blast.style.top=sy+"px";
 
 
-target.style.display =
-"none";
-
-
-}
-
-
-
-else{
-
-
-mode.innerHTML =
-"MODE: SCANNING";
-
-target.style.display =
-"none";
-
-}
-
-
-
-// blast when hand comes closer
-
-
-if(size-oldSize > 12){
-
-
-blast.style.display =
-"block";
-
-
-blast.style.left =
-sx+"px";
-
-
-blast.style.top =
-sy+"px";
-
-
-blast.style.width =
+blast.style.width=
 innerWidth+"px";
 
 
 }
 
 
-else{
-
-
-blast.style.display =
-"none";
-
 
 }
 
 
 
-oldSize=size;
+// ✊ SHIELD MODE
 
 
-
-}
-
-
-else{
+else if(fingers==0){
 
 
-glove.style.display =
-"none";
+mode.innerHTML=
+"MODE: ENERGY SHIELD 🛡";
 
 
-scanner.style.display =
-"none";
+charge=0;
 
 
-blast.style.display =
-"none";
-
-
-target.style.display =
-"none";
-
-
-power=0;
-
-
-energy.innerHTML =
+energy.innerHTML=
 "ENERGY 0%";
 
 
-mode.innerHTML =
+shield.style.display="block";
+
+
+shield.style.left=
+sx-125+"px";
+
+
+shield.style.top=
+sy-125+"px";
+
+
+}
+
+
+
+// ☝ LASER MODE
+
+
+else if(fingers==1){
+
+
+mode.innerHTML=
+"MODE: LASER 🔴";
+
+
+charge=0;
+
+
+energy.innerHTML=
+"ENERGY 0%";
+
+
+laser.style.display="block";
+
+
+laser.style.left=
+sx+"px";
+
+
+laser.style.top=
+sy+"px";
+
+
+laser.style.width=
+innerWidth+"px";
+
+
+}
+
+
+
+// ✌ OTHER
+
+
+else{
+
+
+mode.innerHTML=
+"MODE: SCANNING";
+
+charge=0;
+
+energy.innerHTML=
+"ENERGY 0%";
+
+
+}
+
+
+}
+
+
+
+else{
+
+
+glove.style.display="none";
+
+scanner.style.display="none";
+
+blast.style.display="none";
+
+laser.style.display="none";
+
+shield.style.display="none";
+
+
+mode.innerHTML=
 "MODE: SEARCHING";
+
+
+charge=0;
+
+energy.innerHTML=
+"ENERGY 0%";
 
 
 }
@@ -319,15 +334,12 @@ mode.innerHTML =
 
 
 
-// start camera
 
 
 const camera =
 new Camera(video,{
 
-
 onFrame:async()=>{
-
 
 await hands.send({
 
@@ -335,14 +347,11 @@ image:video
 
 });
 
-
 },
-
 
 width:1280,
 
 height:720
-
 
 });
 
