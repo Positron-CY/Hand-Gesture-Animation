@@ -1,11 +1,6 @@
 const video = document.getElementById("video");
 const box = document.getElementById("animation");
 
-function animate(type, text) {
-    box.className = type;
-    box.innerHTML = text;
-}
-
 const hands = new Hands({
     locateFile: (file) => {
         return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
@@ -22,48 +17,22 @@ hands.setOptions({
 
 hands.onResults((results) => {
 
-    if (results.multiHandLandmarks && 
+    console.log(results);
+
+    if (results.multiHandLandmarks &&
         results.multiHandLandmarks.length > 0) {
 
-        let hand = results.multiHandLandmarks[0];
+        box.innerHTML = "🔥 HAND DETECTED 🔥";
+        box.style.fontSize = "50px";
+        box.style.transform =
+        "scale(1.3) rotate(10deg)";
 
-        let indexTip = hand[8].y;
-        let indexBase = hand[6].y;
+    }
 
-        let middleTip = hand[12].y;
-        let middleBase = hand[10].y;
+    else {
 
-
-        if (indexTip < indexBase && middleTip < middleBase) {
-
-            animate(
-            "pulse",
-            "🖐️ ENERGY BLAST"
-            );
-
-        } 
-        
-        else if (indexTip < indexBase) {
-
-            animate(
-            "spin",
-            "✌️ MAGIC SPIN"
-            );
-
-        } 
-        
-        else {
-
-            animate(
-            "bounce",
-            "✊ SUPER PUNCH"
-            );
-
-        }
-
-    } else {
-
-        box.innerHTML = "Show your hand ✋";
+        box.innerHTML = "Move hand in front ✋";
+        box.style.transform = "scale(1)";
 
     }
 
@@ -73,15 +42,11 @@ hands.onResults((results) => {
 const camera = new Camera(video, {
 
     onFrame: async () => {
-
-        await hands.send({
-            image: video
-        });
-
+        await hands.send({image: video});
     },
 
     width: 640,
-    height: 480
+    height:480
 
 });
 
