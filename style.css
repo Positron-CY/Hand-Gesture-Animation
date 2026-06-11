@@ -2,14 +2,11 @@
 box-sizing:border-box;
 }
 
-
 body{
-
 margin:0;
 overflow:hidden;
 background:black;
 font-family:Arial;
-
 }
 
 
@@ -27,7 +24,7 @@ transform:scaleX(-1);
 }
 
 
-/* JARVIS HUD */
+/* HUD */
 
 
 #hud{
@@ -44,19 +41,12 @@ border:1px solid cyan;
 border-radius:20px;
 
 
-color:cyan;
-
-font-size:18px;
-
-
 background:
 
-rgba(0,255,255,0.08);
+rgba(0,255,255,.08);
 
 
-backdrop-filter:
-
-blur(8px);
+color:cyan;
 
 
 box-shadow:
@@ -66,10 +56,12 @@ box-shadow:
 
 text-shadow:
 
-0 0 20px cyan;
+0 0 15px cyan;
+
+
+z-index:5;
 
 }
-
 
 
 .title{
@@ -80,6 +72,8 @@ font-size:25px;
 
 
 
+
+
 /* scanner */
 
 
@@ -87,23 +81,19 @@ font-size:25px;
 
 position:absolute;
 
-width:320px;
-height:320px;
+width:280px;
+height:280px;
 
 border-radius:50%;
 
-border:
-
-3px dashed cyan;
-
+border:3px dashed cyan;
 
 display:none;
 
 
 box-shadow:
 
-0 0 50px cyan,
-inset 0 0 50px cyan;
+0 0 50px cyan;
 
 
 animation:
@@ -118,13 +108,13 @@ spin 5s linear infinite;
 
 100%{
 
-transform:
-
-rotate(360deg);
+transform:rotate(360deg);
 
 }
 
 }
+
+
 
 
 
@@ -135,55 +125,162 @@ rotate(360deg);
 
 position:absolute;
 
-width:240px;
+width:250px;
 
 height:350px;
+
 
 display:none;
 
 
+transition:.05s linear;
+
+
 filter:
 
-drop-shadow(0 0 30px red);
-
-
-transition:
-
-0.05s linear;
+drop-shadow(0 0 25px red);
 
 }
 
 
 
-#hand{
+
+/* fingers */
+
+
+.finger{
 
 position:absolute;
 
-top:110px;
+width:35px;
 
-left:35px;
-
-
-width:170px;
-
-height:180px;
+height:130px;
 
 
-border-radius:
+top:10px;
 
-45% 45% 35% 35%;
+
+border-radius:25px;
 
 
 background:
 
 linear-gradient(
-135deg,
-#250000,
+
+90deg,
+
+#400,
+
 red,
-orange,
+
 gold
+
 );
 
+
+box-shadow:
+
+0 0 20px red;
+
+
+transform-origin:
+
+bottom center;
+
+
+transition:
+
+.08s linear;
+
+}
+
+
+
+#thumb{
+
+left:5px;
+
+top:100px;
+
+transform:
+
+rotate(-45deg);
+
+}
+
+
+#index{
+
+left:55px;
+
+}
+
+
+#middle{
+
+left:100px;
+
+height:145px;
+
+}
+
+
+#ring{
+
+left:145px;
+
+}
+
+
+#pinky{
+
+left:190px;
+
+height:115px;
+
+}
+
+
+
+
+/* palm */
+
+
+#palm{
+
+position:absolute;
+
+
+left:45px;
+
+top:150px;
+
+
+width:160px;
+
+height:150px;
+
+
+border-radius:
+
+40%;
+
+
+background:
+
+linear-gradient(
+
+135deg,
+
+#300,
+
+red,
+
+orange,
+
+gold
+
+);
 
 
 box-shadow:
@@ -192,65 +289,21 @@ box-shadow:
 
 inset 0 0 40px black;
 
-
 }
 
 
 
-.finger{
 
-
-position:absolute;
-
-top:0;
-
-
-width:35px;
-
-height:120px;
-
-
-border-radius:
-
-30px;
-
-
-background:
-
-linear-gradient(
-red,
-#330000
-);
-
-
-
-box-shadow:
-
-0 0 20px red;
-
-}
-
-
-
-.f1{left:25px;}
-
-.f2{left:70px;}
-
-.f3{left:115px;}
-
-.f4{left:160px;}
-
-
+/* reactor */
 
 
 #reactor{
 
-
 position:absolute;
 
-left:50px;
+left:45px;
 
-top:55px;
+top:40px;
 
 
 width:70px;
@@ -266,7 +319,9 @@ background:
 radial-gradient(
 
 white,
+
 cyan,
+
 blue
 
 );
@@ -280,11 +335,7 @@ box-shadow:
 0 0 120px blue;
 
 
-
-animation:
-
-pulse 1s infinite;
-
+animation:pulse 1s infinite;
 
 }
 
@@ -292,12 +343,9 @@ pulse 1s infinite;
 
 @keyframes pulse{
 
-
 50%{
 
-transform:
-
-scale(1.2);
+transform:scale(1.2);
 
 }
 
@@ -306,18 +354,21 @@ scale(1.2);
 
 
 
-/* repulsor */
+
+/* weapons */
 
 
 #blast{
 
 position:absolute;
 
-
 display:none;
 
 
-height:90px;
+height:80px;
+
+
+border-radius:50px;
 
 
 background:
@@ -335,30 +386,18 @@ transparent
 );
 
 
-border-radius:
-
-50px;
-
-
-
 box-shadow:
 
 0 0 150px cyan;
-
 
 }
 
 
 
 
-/* finger laser */
-
-
 #laser{
 
-
 position:absolute;
-
 
 display:none;
 
@@ -371,28 +410,23 @@ background:red;
 
 box-shadow:
 
-0 0 60px red;
-
+0 0 70px red;
 
 }
 
 
 
-/* shield */
-
 
 #shield{
 
-
 position:absolute;
-
 
 display:none;
 
 
-width:250px;
+width:260px;
 
-height:250px;
+height:260px;
 
 
 border-radius:50%;
@@ -410,26 +444,6 @@ box-shadow:
 inset 0 0 50px cyan;
 
 
-animation:
-
-shield 1s infinite;
-
-
-}
-
-
-
-@keyframes shield{
-
-
-50%{
-
-
-transform:
-
-scale(1.2);
-
-
-}
+animation:pulse 1s infinite;
 
 }
