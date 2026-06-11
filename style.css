@@ -1,238 +1,193 @@
 body{
+
 margin:0;
-background:black;
 overflow:hidden;
+background:black;
+
 }
 
 
 video{
+
 position:absolute;
+
 width:100vw;
 height:100vh;
+
 object-fit:cover;
+
 transform:scaleX(-1);
-}
-
-
-#repulsor{
-
-position:absolute;
-
-width:120px;
-height:120px;
-
-border-radius:50%;
-
-display:none;
-
-background:
-radial-gradient(
-white,
-cyan,
-blue,
-transparent
-);
-
-box-shadow:
-
-0 0 20px white,
-0 0 60px cyan,
-0 0 120px blue;
-
-
-animation:pulse .5s infinite;
 
 }
 
 
-.core{
-
-width:100%;
-height:100%;
-
-border-radius:50%;
-
-border:5px solid cyan;
-
-animation:spin 1s linear infinite;
-
-}
-
-
-
-@keyframes pulse{
-
-50%{
-
-transform:scale(1.4);
-
-}
-
-}
-
-
-@keyframes spin{
-
-100%{
-
-transform:rotate(360deg);
-
-}
-
-}
-#beam{
-
-position:absolute;
-
-height:40px;
-width:0px;
-
-background:linear-gradient(
-90deg,
-cyan,
-white,
-cyan
-);
-
-border-radius:50px;
-
-box-shadow:
-0 0 30px cyan,
-0 0 80px blue,
-0 0 150px white;
-
-display:none;
-
-animation:fire .2s infinite;
-
-}
-
-
-@keyframes fire{
-
-50%{
-
-height:80px;
-
-}
-
-}
-
-
-.shock{
-
-position:absolute;
-
-width:200px;
-height:200px;
-
-border-radius:50%;
-
-border:5px solid cyan;
-
-animation:shockwave .5s;
-
-}
-
-
-@keyframes shockwave{
-
-100%{
-
-transform:scale(5);
-opacity:0;
-
-}
-
-}
 #glove{
 
 position:absolute;
 
-width:220px;
-height:220px;
+width:200px;
+height:300px;
 
 display:none;
+
+transition:.08s linear;
 
 }
 
 
-.armor{
+#palm{
 
 position:absolute;
 
+top:90px;
+left:35px;
+
+width:130px;
+height:140px;
+
+
 background:
+
 linear-gradient(
-45deg,
-#700,
+140deg,
+#6b0000,
 red,
 gold
+);
+
+
+border-radius:
+40% 40% 50% 50%;
+
+
+box-shadow:
+
+0 0 25px red,
+inset 0 0 30px black;
+
+
+}
+
+
+
+.finger{
+
+position:absolute;
+
+width:28px;
+height:100px;
+
+top:0;
+
+background:
+
+linear-gradient(
+red,
+#550000
 );
 
 border-radius:20px;
 
 box-shadow:
-0 0 20px red,
-0 0 50px gold;
-
-animation:suit .8s infinite alternate;
+0 0 20px red;
 
 }
 
 
-.a1{
 
-width:90px;
+.f1{left:35px;}
+.f2{left:70px;}
+.f3{left:105px;}
+.f4{left:140px;}
+
+
+
+#reactor{
+
+position:absolute;
+
+width:60px;
+height:60px;
+
+left:35px;
+top:45px;
+
+border-radius:50%;
+
+
+background:
+
+radial-gradient(
+white,
+cyan,
+blue
+);
+
+
+box-shadow:
+
+0 0 30px cyan,
+0 0 80px blue;
+
+
+animation:power .7s infinite;
+
+
+}
+
+
+
+@keyframes power{
+
+50%{
+
+transform:scale(1.3);
+
+}
+
+}
+
+
+
+#beam{
+
+position:absolute;
+
 height:50px;
 
-left:60px;
-top:10px;
+width:0;
+
+background:
+
+linear-gradient(
+90deg,
+cyan,
+white
+);
+
+
+border-radius:50px;
+
+display:none;
+
+
+box-shadow:
+
+0 0 40px cyan,
+0 0 120px blue;
+
+
+animation:beam .2s infinite;
 
 }
 
 
-.a2{
 
-width:60px;
-height:120px;
+@keyframes beam{
 
-left:10px;
-top:70px;
+50%{
 
-transform:rotate(-30deg);
-
-}
-
-
-.a3{
-
-width:60px;
-height:120px;
-
-right:10px;
-top:70px;
-
-transform:rotate(30deg);
-
-}
-
-
-@keyframes suit{
-
-0%{
-
-transform:
-translateY(-200px)
-rotate(180deg);
-
-opacity:0;
-
-}
-
-
-100%{
-
-opacity:1;
+height:80px;
 
 }
 
