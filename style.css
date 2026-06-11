@@ -1,52 +1,122 @@
-body {
-    background: #111;
-    color: white;
-    text-align: center;
-    font-family: Arial;
-}
-
-#video {
-    width: 500px;
-    border-radius: 20px;
-}
-
-#animation {
-    margin: 40px auto;
-    font-size: 40px;
-    width: 300px;
-    height: 150px;
-}
-    
-.pulse {
-    animation: pulse 1s infinite;
-}
-
-.spin {
-    animation: spin 1s infinite linear;
-}
-
-.bounce {
-    animation: bounce 1s infinite;
+body{
+background:black;
+color:white;
+text-align:center;
+overflow:hidden;
+font-family:Arial;
 }
 
 
-@keyframes pulse {
-    50% {
-        transform: scale(1.5);
-        color: cyan;
-    }
-}
-
-@keyframes spin {
-    100% {
-        transform: rotate(360deg);
-    }
+video{
+width:100%;
+max-width:500px;
+border-radius:20px;
 }
 
 
-@keyframes bounce {
-    50% {
-        transform: translateY(-50px);
-        color: yellow;
-    }
+#effect{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+}
+
+
+.blast{
+
+width:150px;
+height:150px;
+border-radius:50%;
+background:cyan;
+box-shadow:
+0 0 30px cyan,
+0 0 80px cyan,
+0 0 150px white;
+
+animation:blast 0.7s infinite;
+
+}
+
+
+.portal{
+
+width:220px;
+height:220px;
+border-radius:50%;
+border:10px solid orange;
+
+box-shadow:
+0 0 40px orange,
+0 0 100px red;
+
+animation:spin 1s linear infinite;
+
+}
+
+
+.laser{
+
+width:400px;
+height:20px;
+
+background:red;
+
+box-shadow:
+0 0 40px red;
+
+animation:laser .3s infinite;
+
+}
+
+
+.punch{
+
+width:120px;
+height:120px;
+
+background:red;
+border-radius:50%;
+
+box-shadow:
+0 0 100px red;
+
+animation:punch .5s infinite;
+
+}
+
+
+
+@keyframes blast{
+
+50%{
+transform:scale(1.5);
+}
+
+}
+
+
+@keyframes spin{
+
+100%{
+transform:rotate(360deg);
+}
+
+}
+
+
+@keyframes laser{
+
+50%{
+width:700px;
+}
+
+}
+
+
+@keyframes punch{
+
+50%{
+transform:scale(1.8);
+}
+
 }
