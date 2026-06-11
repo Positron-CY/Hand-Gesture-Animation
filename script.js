@@ -10,22 +10,28 @@ const shield=document.getElementById("shield");
 const mode=document.getElementById("mode");
 const energy=document.getElementById("energy");
 
+const index=document.getElementById("index");
+const middle=document.getElementById("middle");
+const ring=document.getElementById("ring");
+const pinky=document.getElementById("pinky");
+const thumb=document.getElementById("thumb");
 
-let sx=0, sy=0;
 
-let smoothSize=100;
-let smoothAngle=0;
+let sx=0;
+let sy=0;
+
+let sizeSmooth=120;
+let angleSmooth=0;
 
 let charge=0;
-let frame=0;
-
-let nanoTimer=0;
+let nano=0;
 
 
 
 const hands=new Hands({
 
-locateFile:f =>
+locateFile:f=>
+
 `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
 
 });
@@ -38,9 +44,9 @@ maxNumHands:1,
 
 modelComplexity:0,
 
-minDetectionConfidence:.7,
+minDetectionConfidence:.75,
 
-minTrackingConfidence:.7
+minTrackingConfidence:.75
 
 });
 
@@ -50,46 +56,15 @@ minTrackingConfidence:.7
 hands.onResults(res=>{
 
 
-frame++;
-
-if(frame%2!==0)
-return;
-
-
-
 if(res.multiHandLandmarks &&
 res.multiHandLandmarks.length){
+
 
 
 let h=res.multiHandLandmarks[0];
 
 
-// fingers
-
-
-let fingers=0;
-
-
-if(h[8].y<h[6].y)
-fingers++;
-
-
-if(h[12].y<h[10].y)
-fingers++;
-
-
-if(h[16].y<h[14].y)
-fingers++;
-
-
-if(h[20].y<h[18].y)
-fingers++;
-
-
-
-
 // position
-
 
 let palm=h[9];
 
@@ -99,10 +74,9 @@ let x=(1-palm.x)*innerWidth;
 let y=palm.y*innerHeight;
 
 
+sx+=(x-sx)*.3;
 
-sx+=(x-sx)*0.35;
-
-sy+=(y-sy)*0.35;
+sy+=(y-sy)*.3;
 
 
 
@@ -110,18 +84,18 @@ sy+=(y-sy)*0.35;
 
 
 let size=
+
 Math.abs(h[0].y-h[12].y)
 *850;
 
 
-
-smoothSize +=
-(size-smoothSize)*0.25;
-
+sizeSmooth+=
+(size-sizeSmooth)*.25;
 
 
 
-// rotation fixed
+
+// rotation
 
 
 let angle=
@@ -135,105 +109,30 @@ h[5].x-h[17].x
 )*70;
 
 
-
-smoothAngle +=
-(angle-smoothAngle)*0.25;
-
-
-
-
-// nano particles
-
-
-nanoTimer++;
-
-
-if(nanoTimer%5==0){
-
-
-let n=
-document.createElement("div");
-
-
-n.style.position="absolute";
-
-
-n.style.width="8px";
-
-n.style.height="8px";
-
-
-n.style.borderRadius="50%";
-
-
-n.style.background="cyan";
-
-
-n.style.boxShadow=
-"0 0 20px cyan";
-
-
-n.style.left=
-sx+(Math.random()*300-150)+"px";
-
-
-n.style.top=
-sy+(Math.random()*300-150)+"px";
-
-
-n.style.transition=".6s";
-
-
-document.body.appendChild(n);
-
-
-
-setTimeout(()=>{
-
-
-n.style.left=sx+"px";
-
-n.style.top=sy+"px";
-
-n.style.opacity=0;
-
-
-},50);
-
-
-
-setTimeout(()=>{
-
-n.remove();
-
-},700);
-
-
-}
+angleSmooth+=
+(angle-angleSmooth)*.25;
 
 
 
 
-
-// glove
+// glove position
 
 
 glove.style.display="block";
 
 
 glove.style.left=
-sx-smoothSize/2+"px";
+sx-sizeSmooth/2+"px";
 
 
 glove.style.top=
-sy-smoothSize/1.7+"px";
-
+sy-sizeSmooth/1.5+"px";
 
 
 glove.style.transform=
 
-`scale(${smoothSize/240})
-rotate(${smoothAngle}deg)`;
+`scale(${sizeSmooth/260})
+rotate(${angleSmooth}deg)`;
 
 
 
@@ -245,16 +144,148 @@ scanner.style.display="block";
 
 
 scanner.style.left=
-sx-160+"px";
+sx-140+"px";
 
 
 scanner.style.top=
-sy-160+"px";
+sy-140+"px";
 
 
 
 
-// reset
+
+// FINGER BENDING
+
+
+function bend(finger,tip,base){
+
+
+if(h[tip].y > h[base].y){
+
+
+finger.style.transform=
+"rotate(55deg)";
+
+
+}
+
+else{
+
+
+finger.style.transform=
+"rotate(0deg)";
+
+
+}
+
+}
+
+
+
+bend(index,8,6);
+
+bend(middle,12,10);
+
+bend(ring,16,14);
+
+bend(pinky,20,18);
+
+
+
+thumb.style.transform=
+
+`rotate(${
+(h[4].x-h[2].x)*200-40
+}deg)`;
+
+
+
+
+
+// count fingers
+
+
+let fingers=0;
+
+
+if(h[8].y<h[6].y) fingers++;
+
+if(h[12].y<h[10].y) fingers++;
+
+if(h[16].y<h[14].y) fingers++;
+
+if(h[20].y<h[18].y) fingers++;
+
+
+
+
+// nano particles
+
+
+nano++;
+
+
+if(nano%6==0){
+
+
+let p=document.createElement("div");
+
+
+p.style.position="absolute";
+
+p.style.width="7px";
+
+p.style.height="7px";
+
+p.style.borderRadius="50%";
+
+p.style.background="cyan";
+
+p.style.boxShadow=
+"0 0 20px cyan";
+
+
+p.style.left=
+sx+Math.random()*300-150+"px";
+
+
+p.style.top=
+sy+Math.random()*300-150+"px";
+
+
+p.style.transition=".5s";
+
+
+document.body.appendChild(p);
+
+
+setTimeout(()=>{
+
+p.style.left=sx+"px";
+
+p.style.top=sy+"px";
+
+p.style.opacity=0;
+
+},30);
+
+
+
+setTimeout(()=>{
+
+p.remove();
+
+},600);
+
+
+}
+
+
+
+
+
+
+// reset weapons
 
 
 blast.style.display="none";
@@ -266,17 +297,15 @@ shield.style.display="none";
 
 
 
-// OPEN PALM
-
 
 if(fingers>=4){
 
 
 mode.innerHTML=
-"REPULSOR READY ⚡";
+"REPULSOR MODE ⚡";
 
 
-charge+=5;
+charge+=4;
 
 
 if(charge>100)
@@ -311,9 +340,6 @@ innerWidth+"px";
 
 
 
-// FIST
-
-
 else if(fingers==0){
 
 
@@ -327,19 +353,14 @@ charge=0;
 shield.style.display="block";
 
 
-shield.style.left=
-sx-125+"px";
+shield.style.left=sx-130+"px";
 
 
-shield.style.top=
-sy-125+"px";
+shield.style.top=sy-130+"px";
 
 
 }
 
-
-
-// ONE FINGER
 
 
 else if(fingers==1){
@@ -373,7 +394,7 @@ else{
 
 
 mode.innerHTML=
-"NANO MODE 🦾";
+"NANO TRACKING 🦾";
 
 
 charge=0;
@@ -384,6 +405,7 @@ charge=0;
 
 
 }
+
 
 
 else{
@@ -400,18 +422,16 @@ laser.style.display="none";
 shield.style.display="none";
 
 
+mode.innerHTML="SEARCHING";
+
+energy.innerHTML="ENERGY 0%";
+
+
 charge=0;
 
 
-energy.innerHTML=
-"ENERGY 0%";
-
-
-mode.innerHTML=
-"SEARCHING";
-
-
 }
+
 
 
 });
@@ -419,10 +439,8 @@ mode.innerHTML=
 
 
 
-
 const camera=
 new Camera(video,{
-
 
 onFrame:async()=>{
 
@@ -443,7 +461,6 @@ height:540
 
 
 });
-
 
 
 camera.start();
