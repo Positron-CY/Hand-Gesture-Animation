@@ -1,90 +1,87 @@
 const video = document.getElementById("video");
 const box = document.getElementById("animation");
 
-
-function animate(type, text){
-
-    box.className = "";
-
-    setTimeout(()=>{
-
-        box.className = type;
-        box.innerHTML = text;
-
-    },50);
+function animate(type, text) {
+    box.className = type;
+    box.innerHTML = text;
 }
-
-
 
 const hands = new Hands({
-
-locateFile:(file)=>{
-return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-}
-
+    locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+    }
 });
-
 
 hands.setOptions({
-
-maxNumHands:1,
-minDetectionConfidence:0.7,
-minTrackingConfidence:0.7
-
+    maxNumHands: 1,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5
 });
 
 
+hands.onResults((results) => {
 
-hands.onResults((results)=>{
+    if (results.multiHandLandmarks && 
+        results.multiHandLandmarks.length > 0) {
 
-if(results.multiHandLandmarks.length>0){
+        let hand = results.multiHandLandmarks[0];
 
-let points = results.multiHandLandmarks[0];
+        let indexTip = hand[8].y;
+        let indexBase = hand[6].y;
 
-let thumb = points[4].y;
-let index = points[8].y;
-let middle = points[12].y;
-
-
-// Open palm
-if(index < points[6].y && middle < points[10].y){
-
-animate("pulse","🖐️ ENERGY POWER");
-
-}
+        let middleTip = hand[12].y;
+        let middleBase = hand[10].y;
 
 
-// Peace sign
-else if(index < points[6].y){
+        if (indexTip < indexBase && middleTip < middleBase) {
 
-animate("spin","✌️ MAGIC SPIN");
+            animate(
+            "pulse",
+            "🖐️ ENERGY BLAST"
+            );
 
-}
+        } 
+        
+        else if (indexTip < indexBase) {
 
+            animate(
+            "spin",
+            "✌️ MAGIC SPIN"
+            );
 
-// Fist
-else{
+        } 
+        
+        else {
 
-animate("bounce","✊ POWER HIT");
+            animate(
+            "bounce",
+            "✊ SUPER PUNCH"
+            );
 
-}
+        }
 
-}
+    } else {
+
+        box.innerHTML = "Show your hand ✋";
+
+    }
 
 });
-
 
 
 const camera = new Camera(video, {
 
-onFrame: async()=>{
+    onFrame: async () => {
 
-await hands.send({image:video});
+        await hands.send({
+            image: video
+        });
 
-},
+    },
 
-width:640,
-height:480
+    width: 640,
+    height: 480
 
 });
 
