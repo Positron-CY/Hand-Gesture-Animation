@@ -1,5 +1,5 @@
 const video = document.getElementById("video");
-const box = document.getElementById("animation");
+const box = document.getElementById("effect");
 
 function show(text, effect){
     box.innerHTML = text;
@@ -47,25 +47,25 @@ if(h[20].y < h[18].y) fingers++;
 
 if(fingers >= 4){
 
-show("🖐️ ENERGY BLAST ⚡","pulse");
+show("🖐️ ENERGY BLAST ⚡","blast");
 
 }
 
 else if(fingers == 2){
 
-show("✌️ MAGIC PORTAL 🌀","spin");
+show("✌️ MAGIC PORTAL 🌀","portal");
 
 }
 
 else if(fingers == 1){
 
-show("☝️ LASER BEAM 🔥","bounce");
+show("☝️ LASER BEAM 🔥","laser");
 
 }
 
 else{
 
-show("✊ POWER PUNCH 💥","bounce");
+show("✊ POWER PUNCH 💥","punch");
 
 }
 
