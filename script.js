@@ -1,94 +1,96 @@
-const video = document.getElementById("video");
-const box = document.getElementById("effect");
+const video =
+document.getElementById("video");
 
-function show(text, effect){
-    box.innerHTML = text;
-    box.className = effect;
+const rep =
+document.getElementById("repulsor");
+
+
+const hands =
+new Hands({
+
+locateFile:(file)=>{
+
+return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+
 }
 
-
-const hands = new Hands({
-    locateFile:(file)=>{
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-    }
 });
 
 
 hands.setOptions({
-    maxNumHands:1,
-    modelComplexity:1,
-    minDetectionConfidence:0.5,
-    minTrackingConfidence:0.5
+
+maxNumHands:1,
+
+modelComplexity:1,
+
+minDetectionConfidence:.7,
+
+minTrackingConfidence:.7
+
 });
+
 
 
 hands.onResults((results)=>{
 
+
 if(results.multiHandLandmarks &&
 results.multiHandLandmarks.length>0){
 
-let h = results.multiHandLandmarks[0];
 
-let fingers = 0;
-
-
-// index
-if(h[8].y < h[6].y) fingers++;
-
-// middle
-if(h[12].y < h[10].y) fingers++;
-
-// ring
-if(h[16].y < h[14].y) fingers++;
-
-// pinky
-if(h[20].y < h[18].y) fingers++;
+let hand =
+results.multiHandLandmarks[0];
 
 
-if(fingers >= 4){
+// palm position
+let palm = hand[9];
 
-show("🖐️ ENERGY BLAST ⚡","blast");
 
-}
+rep.style.display="block";
 
-else if(fingers == 2){
 
-show("✌️ MAGIC PORTAL 🌀","portal");
+let x =
+(1-palm.x)*window.innerWidth;
 
-}
+let y =
+palm.y*window.innerHeight;
 
-else if(fingers == 1){
 
-show("☝️ LASER BEAM 🔥","laser");
+rep.style.left =
+(x-60)+"px";
 
-}
-
-else{
-
-show("✊ POWER PUNCH 💥","punch");
-
-}
+rep.style.top =
+(y-60)+"px";
 
 
 }
 
 else{
 
-box.innerHTML="Show hand ✋";
+rep.style.display="none";
 
 }
+
 
 });
 
 
-const camera = new Camera(video,{
-    
+
+const camera =
+new Camera(video,{
+
 onFrame:async()=>{
-await hands.send({image:video});
+
+await hands.send({
+
+image:video
+
+});
+
 },
 
-width:640,
-height:480
+width:1280,
+height:720
 
 });
 
