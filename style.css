@@ -1,0 +1,52 @@
+body {
+    background: #111;
+    color: white;
+    text-align: center;
+    font-family: Arial;
+}
+
+#video {
+    width: 500px;
+    border-radius: 20px;
+}
+
+#animation {
+    margin: 40px auto;
+    font-size: 40px;
+    width: 300px;
+    height: 150px;
+}
+    
+.pulse {
+    animation: pulse 1s infinite;
+}
+
+.spin {
+    animation: spin 1s infinite linear;
+}
+
+.bounce {
+    animation: bounce 1s infinite;
+}
+
+
+@keyframes pulse {
+    50% {
+        transform: scale(1.5);
+        color: cyan;
+    }
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+@keyframes bounce {
+    50% {
+        transform: translateY(-50px);
+        color: yellow;
+    }
+}
