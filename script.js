@@ -1,16 +1,28 @@
 const video=document.getElementById("video");
+
 const glove=document.getElementById("glove");
-const beam=document.getElementById("beam");
+
 const scanner=document.getElementById("scanner");
-const power=document.getElementById("power");
+
+const blast=document.getElementById("blast");
+
+const energy=document.getElementById("energy");
 
 
-let sx=0, sy=0;
+
+let sx=0;
+let sy=0;
+
+let smoothSize=1;
+
 let oldSize=0;
-let charge=0;
+
+let power=0;
 
 
-const hands=new Hands({
+
+const hands =
+new Hands({
 
 locateFile:f=>
 
@@ -19,117 +31,155 @@ locateFile:f=>
 });
 
 
+
 hands.setOptions({
 
 maxNumHands:1,
+
 modelComplexity:1,
-minDetectionConfidence:.7,
-minTrackingConfidence:.7
+
+minDetectionConfidence:.8,
+
+minTrackingConfidence:.8
 
 });
 
 
 
-hands.onResults(r=>{
+hands.onResults(data=>{
 
 
-if(r.multiHandLandmarks &&
-r.multiHandLandmarks.length){
+if(data.multiHandLandmarks &&
+data.multiHandLandmarks.length){
 
 
-let h=r.multiHandLandmarks[0];
+
+let h=data.multiHandLandmarks[0];
 
 
 let palm=h[9];
+
 let wrist=h[0];
 
 
-let x=(1-palm.x)*innerWidth;
-let y=palm.y*innerHeight;
+
+let x=
+(1-palm.x)*innerWidth;
 
 
-sx+=(x-sx)*.25;
-sy+=(y-sy)*.25;
+let y=
+palm.y*innerHeight;
+
+
+
+// smooth tracking
+
+sx+=(x-sx)*0.15;
+
+sy+=(y-sy)*0.15;
+
 
 
 let size=
-Math.abs(wrist.y-h[12].y)*700;
+Math.abs(wrist.y-h[12].y)*750;
+
+
+smoothSize +=
+(size-smoothSize)*0.15;
 
 
 
 glove.style.display="block";
+
 scanner.style.display="block";
 
 
+
 glove.style.left=
-sx-size/2+"px";
+sx-smoothSize/2+"px";
+
 
 glove.style.top=
-sy-size/1.8+"px";
+sy-smoothSize/1.6+"px";
+
 
 
 glove.style.transform=
-`scale(${size/220})`;
+
+`scale(${smoothSize/230})`;
 
 
 
 scanner.style.left=
-sx-125+"px";
+sx-150+"px";
+
 
 scanner.style.top=
-sy-125+"px";
+sy-150+"px";
 
 
 
-charge++;
+// energy
 
-if(charge>100)
-charge=100;
+power++;
 
-
-power.innerHTML=
-charge+"%";
+if(power>100)
+power=100;
 
 
-
-// blast
-
-if(size-oldSize>15){
+energy.innerHTML=
+"ENERGY "+power+"%";
 
 
-beam.style.display="block";
 
-beam.style.left=sx+"px";
+// blast when hand moves forward
 
-beam.style.top=sy+"px";
 
-beam.style.width=
+if(size-oldSize>12){
+
+
+blast.style.display="block";
+
+blast.style.left=sx+"px";
+
+blast.style.top=sy+"px";
+
+blast.style.width=
 innerWidth+"px";
 
-createParticle();
 
 }
 
 else{
 
-beam.style.display="none";
+
+blast.style.display="none";
+
 
 }
 
 
 oldSize=size;
 
+
 }
+
 
 else{
 
+
 glove.style.display="none";
+
 scanner.style.display="none";
-beam.style.display="none";
 
-charge=0;
+blast.style.display="none";
 
-power.innerHTML="0%";
+
+power=0;
+
+energy.innerHTML=
+"ENERGY 0%";
+
 
 }
 
@@ -138,40 +188,23 @@ power.innerHTML="0%";
 
 
 
-function createParticle(){
-
-let p=document.createElement("div");
-
-p.className="particle";
-
-p.style.left=sx+"px";
-
-p.style.top=sy+"px";
-
-document.body.appendChild(p);
-
-
-setTimeout(()=>{
-
-p.remove();
-
-},1000);
-
-}
-
-
-
-
-const camera=new Camera(video,{
+const camera =
+new Camera(video,{
 
 onFrame:async()=>{
 
-await hands.send({image:video});
+await hands.send({
+
+image:video
+
+});
 
 },
 
 width:1280,
+
 height:720
+
 
 });
 
