@@ -11,41 +11,44 @@ const mode=document.getElementById("mode");
 const energy=document.getElementById("energy");
 
 
-let sx=0;
-let sy=0;
-
-let smoothSize=1;
+let sx=0, sy=0;
+let smoothSize=100;
+let smoothAngle=0;
 
 let charge=0;
+let frame=0;
 
 
 
-const hands =
-new Hands({
+const hands=new Hands({
 
-locateFile:f =>
+locateFile:f=>
 `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
 
 });
-
 
 
 hands.setOptions({
 
 maxNumHands:1,
 
-modelComplexity:1,
+modelComplexity:0,
 
-minDetectionConfidence:.8,
+minDetectionConfidence:.7,
 
-minTrackingConfidence:.8
+minTrackingConfidence:.7
 
 });
 
 
 
+hands.onResults(res=>{
 
-hands.onResults((res)=>{
+
+frame++;
+
+if(frame%2!==0) return;
+
 
 
 if(res.multiHandLandmarks &&
@@ -55,29 +58,28 @@ res.multiHandLandmarks.length){
 let h=res.multiHandLandmarks[0];
 
 
-// finger count
+
+// fingers
+
 
 let fingers=0;
 
 
-if(h[8].y<h[6].y)
-fingers++;
+if(h[8].y<h[6].y) fingers++;
 
-if(h[12].y<h[10].y)
-fingers++;
+if(h[12].y<h[10].y) fingers++;
 
-if(h[16].y<h[14].y)
-fingers++;
+if(h[16].y<h[14].y) fingers++;
 
-if(h[20].y<h[18].y)
-fingers++;
+if(h[20].y<h[18].y) fingers++;
 
 
-// positions
+
+
+// position
 
 
 let palm=h[9];
-let wrist=h[0];
 
 
 let x=(1-palm.x)*innerWidth;
@@ -86,45 +88,52 @@ let y=palm.y*innerHeight;
 
 
 
-sx+=(x-sx)*0.18;
-
-sy+=(y-sy)*0.18;
+// faster smooth
 
 
+sx+=(x-sx)*0.35;
 
-let size=
-Math.abs(wrist.y-h[12].y)
-*800;
+sy+=(y-sy)*0.35;
 
 
 
-smoothSize +=
-(size-smoothSize)*0.15;
+
+// size
+
+
+let newSize=
+Math.abs(h[0].y-h[12].y)*850;
+
+
+smoothSize+=
+(newSize-smoothSize)*0.25;
 
 
 
-// hand angle rotation
+// FIXED ROTATION
 
 
-let angle =
+let rawAngle=
 
-Math.atan2(
+-Math.atan2(
 
 h[5].y-h[17].y,
 
 h[5].x-h[17].x
 
-)*60;
+)*70;
 
 
 
-// show glove
+smoothAngle +=
+(rawAngle-smoothAngle)*0.25;
+
+
+
+// glove
 
 
 glove.style.display="block";
-
-scanner.style.display="block";
-
 
 
 glove.style.left=
@@ -132,19 +141,22 @@ sx-smoothSize/2+"px";
 
 
 glove.style.top=
-sy-smoothSize/1.6+"px";
+sy-smoothSize/1.7+"px";
 
 
 
 glove.style.transform=
 
 `scale(${smoothSize/240})
- rotate(${angle}deg)`;
+rotate(${smoothAngle}deg)`;
 
 
 
 
 // scanner
+
+
+scanner.style.display="block";
 
 
 scanner.style.left=
@@ -156,7 +168,7 @@ sy-160+"px";
 
 
 
-// reset weapons
+// reset
 
 
 blast.style.display="none";
@@ -168,21 +180,22 @@ shield.style.display="none";
 
 
 
-// 🖐 REPULSOR MODE
+// PALM BLAST
 
 
 if(fingers>=4){
 
 
 mode.innerHTML=
-"MODE: REPULSOR ⚡";
+"REPULSOR READY ⚡";
 
 
-charge+=3;
+charge+=5;
 
 
 if(charge>100)
 charge=100;
+
 
 
 energy.innerHTML=
@@ -190,7 +203,7 @@ energy.innerHTML=
 
 
 
-if(charge>=100){
+if(charge==100){
 
 
 blast.style.display="block";
@@ -200,9 +213,20 @@ blast.style.left=sx+"px";
 
 blast.style.top=sy+"px";
 
+blast.style.width=innerWidth+"px";
 
-blast.style.width=
-innerWidth+"px";
+
+// shake
+
+document.body.style.transform=
+"translate(5px,5px)";
+
+
+setTimeout(()=>{
+
+document.body.style.transform="";
+
+},100);
 
 
 }
@@ -213,94 +237,72 @@ innerWidth+"px";
 
 
 
-// ✊ SHIELD MODE
+// FIST SHIELD
 
 
 else if(fingers==0){
 
 
 mode.innerHTML=
-"MODE: ENERGY SHIELD 🛡";
+"VIBRANIUM SHIELD 🛡";
 
 
 charge=0;
 
 
-energy.innerHTML=
-"ENERGY 0%";
-
-
 shield.style.display="block";
 
 
-shield.style.left=
-sx-125+"px";
+shield.style.left=sx-125+"px";
 
-
-shield.style.top=
-sy-125+"px";
+shield.style.top=sy-125+"px";
 
 
 }
 
 
 
-// ☝ LASER MODE
+// LASER
 
 
 else if(fingers==1){
 
 
 mode.innerHTML=
-"MODE: LASER 🔴";
+"LASER MODE 🔴";
 
 
 charge=0;
 
 
-energy.innerHTML=
-"ENERGY 0%";
-
-
 laser.style.display="block";
 
 
-laser.style.left=
-sx+"px";
+laser.style.left=sx+"px";
 
+laser.style.top=sy+"px";
 
-laser.style.top=
-sy+"px";
-
-
-laser.style.width=
-innerWidth+"px";
+laser.style.width=innerWidth+"px";
 
 
 }
 
-
-
-// ✌ OTHER
 
 
 else{
 
 
 mode.innerHTML=
-"MODE: SCANNING";
+"NANO MODE 🦾";
 
 charge=0;
 
-energy.innerHTML=
-"ENERGY 0%";
-
 
 }
 
 
-}
 
+}
 
 
 else{
@@ -317,14 +319,7 @@ laser.style.display="none";
 shield.style.display="none";
 
 
-mode.innerHTML=
-"MODE: SEARCHING";
-
-
 charge=0;
-
-energy.innerHTML=
-"ENERGY 0%";
 
 
 }
@@ -335,23 +330,16 @@ energy.innerHTML=
 
 
 
-
-const camera =
-new Camera(video,{
+const camera=new Camera(video,{
 
 onFrame:async()=>{
 
-await hands.send({
-
-image:video
-
-});
+await hands.send({image:video});
 
 },
 
-width:1280,
-
-height:720
+width:960,
+height:540
 
 });
 
