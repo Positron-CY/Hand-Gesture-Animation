@@ -1,32 +1,30 @@
-const video=document.getElementById("video");
+const video = document.getElementById("video");
 
-const glove=document.getElementById("glove");
+const glove = document.getElementById("glove");
+const scanner = document.getElementById("scanner");
+const blast = document.getElementById("blast");
 
-const scanner=document.getElementById("scanner");
-
-const blast=document.getElementById("blast");
-
-const energy=document.getElementById("energy");
-
-
-
-let sx=0;
-let sy=0;
-
-let smoothSize=1;
-
-let oldSize=0;
-
-let power=0;
+const energy = document.getElementById("energy");
+const target = document.getElementById("target");
+const mode = document.getElementById("mode");
 
 
+let sx = 0;
+let sy = 0;
 
-const hands =
-new Hands({
+let smoothSize = 1;
 
-locateFile:f=>
+let oldSize = 0;
 
-`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
+let power = 0;
+
+
+
+const hands = new Hands({
+
+locateFile: (file) =>
+
+`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
 
 });
 
@@ -34,54 +32,77 @@ locateFile:f=>
 
 hands.setOptions({
 
-maxNumHands:1,
+maxNumHands: 1,
 
-modelComplexity:1,
+modelComplexity: 1,
 
-minDetectionConfidence:.8,
+minDetectionConfidence: 0.8,
 
-minTrackingConfidence:.8
+minTrackingConfidence: 0.8
 
 });
 
 
 
-hands.onResults(data=>{
+hands.onResults((data)=>{
 
 
 if(data.multiHandLandmarks &&
 data.multiHandLandmarks.length){
 
 
-
-let h=data.multiHandLandmarks[0];
-
-
-let palm=h[9];
-
-let wrist=h[0];
+let h =
+data.multiHandLandmarks[0];
 
 
+// finger detection
 
-let x=
-(1-palm.x)*innerWidth;
-
-
-let y=
-palm.y*innerHeight;
+let fingers = 0;
 
 
-
-// smooth tracking
-
-sx+=(x-sx)*0.15;
-
-sy+=(y-sy)*0.15;
+if(h[8].y < h[6].y)
+fingers++;
 
 
+if(h[12].y < h[10].y)
+fingers++;
 
-let size=
-Math.abs(wrist.y-h[12].y)*750;
+
+if(h[16].y < h[14].y)
+fingers++;
+
+
+if(h[20].y < h[18].y)
+fingers++;
+
+
+// positions
+
+let palm = h[9];
+
+let wrist = h[0];
+
+
+let x =
+(1-palm.x) * innerWidth;
+
+
+let y =
+palm.y * innerHeight;
+
+
+// smooth movement
+
+sx += (x-sx)*0.15;
+
+sy += (y-sy)*0.15;
+
+
+
+let size =
+Math.abs(wrist.y-h[12].y)
+*750;
+
 
 
 smoothSize +=
@@ -89,37 +110,46 @@ smoothSize +=
 
 
 
-glove.style.display="block";
+// glove
 
-scanner.style.display="block";
+glove.style.display =
+"block";
+
+
+scanner.style.display =
+"block";
 
 
 
-glove.style.left=
+glove.style.left =
 sx-smoothSize/2+"px";
 
 
-glove.style.top=
+glove.style.top =
 sy-smoothSize/1.6+"px";
 
 
 
-glove.style.transform=
+glove.style.transform =
 
 `scale(${smoothSize/230})`;
 
 
 
-scanner.style.left=
+// scanner follow
+
+
+scanner.style.left =
 sx-150+"px";
 
 
-scanner.style.top=
+scanner.style.top =
 sy-150+"px";
 
 
 
-// energy
+// energy charge
+
 
 power++;
 
@@ -127,58 +157,159 @@ if(power>100)
 power=100;
 
 
-energy.innerHTML=
+energy.innerHTML =
 "ENERGY "+power+"%";
 
 
 
-// blast when hand moves forward
+
+// gesture modes
 
 
-if(size-oldSize>12){
+if(fingers >= 4){
 
 
-blast.style.display="block";
+mode.innerHTML =
+"MODE: REPULSOR ⚡";
 
-blast.style.left=sx+"px";
 
-blast.style.top=sy+"px";
+glove.className="";
 
-blast.style.width=
+
+target.style.display =
+"none";
+
+
+}
+
+
+
+else if(fingers == 0){
+
+
+mode.innerHTML =
+"MODE: ARMOR LOCK 🦾";
+
+
+target.style.display =
+"block";
+
+
+target.style.left =
+sx-100+"px";
+
+
+target.style.top =
+sy-100+"px";
+
+
+}
+
+
+
+else if(fingers == 2){
+
+
+mode.innerHTML =
+"MODE: HOLOGRAM 🔵";
+
+
+glove.className =
+"holo";
+
+
+target.style.display =
+"none";
+
+
+}
+
+
+
+else{
+
+
+mode.innerHTML =
+"MODE: SCANNING";
+
+target.style.display =
+"none";
+
+}
+
+
+
+// blast when hand comes closer
+
+
+if(size-oldSize > 12){
+
+
+blast.style.display =
+"block";
+
+
+blast.style.left =
+sx+"px";
+
+
+blast.style.top =
+sy+"px";
+
+
+blast.style.width =
 innerWidth+"px";
 
 
 }
 
+
 else{
 
 
-blast.style.display="none";
+blast.style.display =
+"none";
 
 
 }
+
 
 
 oldSize=size;
 
 
+
 }
 
 
 else{
 
 
-glove.style.display="none";
+glove.style.display =
+"none";
 
-scanner.style.display="none";
 
-blast.style.display="none";
+scanner.style.display =
+"none";
+
+
+blast.style.display =
+"none";
+
+
+target.style.display =
+"none";
 
 
 power=0;
 
-energy.innerHTML=
+
+energy.innerHTML =
 "ENERGY 0%";
+
+
+mode.innerHTML =
+"MODE: SEARCHING";
 
 
 }
@@ -188,10 +319,15 @@ energy.innerHTML=
 
 
 
+// start camera
+
+
 const camera =
 new Camera(video,{
 
+
 onFrame:async()=>{
+
 
 await hands.send({
 
@@ -199,7 +335,9 @@ image:video
 
 });
 
+
 },
+
 
 width:1280,
 
