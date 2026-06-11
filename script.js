@@ -1,52 +1,94 @@
 const video = document.getElementById("video");
 const box = document.getElementById("animation");
 
+function show(text, effect){
+    box.innerHTML = text;
+    box.className = effect;
+}
+
+
 const hands = new Hands({
-    locateFile: (file) => {
+    locateFile:(file)=>{
         return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
     }
 });
 
+
 hands.setOptions({
-    maxNumHands: 1,
-    modelComplexity: 1,
-    minDetectionConfidence: 0.5,
-    minTrackingConfidence: 0.5
+    maxNumHands:1,
+    modelComplexity:1,
+    minDetectionConfidence:0.5,
+    minTrackingConfidence:0.5
 });
 
 
-hands.onResults((results) => {
+hands.onResults((results)=>{
 
-    console.log(results);
+if(results.multiHandLandmarks &&
+results.multiHandLandmarks.length>0){
 
-    if (results.multiHandLandmarks &&
-        results.multiHandLandmarks.length > 0) {
+let h = results.multiHandLandmarks[0];
 
-        box.innerHTML = "🔥 HAND DETECTED 🔥";
-        box.style.fontSize = "50px";
-        box.style.transform =
-        "scale(1.3) rotate(10deg)";
+let fingers = 0;
 
-    }
 
-    else {
+// index
+if(h[8].y < h[6].y) fingers++;
 
-        box.innerHTML = "Move hand in front ✋";
-        box.style.transform = "scale(1)";
+// middle
+if(h[12].y < h[10].y) fingers++;
 
-    }
+// ring
+if(h[16].y < h[14].y) fingers++;
+
+// pinky
+if(h[20].y < h[18].y) fingers++;
+
+
+if(fingers >= 4){
+
+show("🖐️ ENERGY BLAST ⚡","pulse");
+
+}
+
+else if(fingers == 2){
+
+show("✌️ MAGIC PORTAL 🌀","spin");
+
+}
+
+else if(fingers == 1){
+
+show("☝️ LASER BEAM 🔥","bounce");
+
+}
+
+else{
+
+show("✊ POWER PUNCH 💥","bounce");
+
+}
+
+
+}
+
+else{
+
+box.innerHTML="Show hand ✋";
+
+}
 
 });
 
 
-const camera = new Camera(video, {
+const camera = new Camera(video,{
+    
+onFrame:async()=>{
+await hands.send({image:video});
+},
 
-    onFrame: async () => {
-        await hands.send({image: video});
-    },
-
-    width: 640,
-    height:480
+width:640,
+height:480
 
 });
 
