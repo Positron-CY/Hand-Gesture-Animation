@@ -80,3 +80,68 @@ transform:rotate(360deg);
 }
 
 }
+#beam{
+
+position:absolute;
+
+height:40px;
+width:0px;
+
+background:linear-gradient(
+90deg,
+cyan,
+white,
+cyan
+);
+
+border-radius:50px;
+
+box-shadow:
+0 0 30px cyan,
+0 0 80px blue,
+0 0 150px white;
+
+display:none;
+
+animation:fire .2s infinite;
+
+}
+
+
+@keyframes fire{
+
+50%{
+
+height:80px;
+
+}
+
+}
+
+
+.shock{
+
+position:absolute;
+
+width:200px;
+height:200px;
+
+border-radius:50%;
+
+border:5px solid cyan;
+
+animation:shockwave .5s;
+
+}
+
+
+@keyframes shockwave{
+
+100%{
+
+transform:scale(5);
+opacity:0;
+
+}
+
+}
