@@ -1,121 +1,118 @@
-const glove =
-document.getElementById("glove");
-
 const video =
 document.getElementById("video");
 
-const rep =
-document.getElementById("repulsor");
+
+const glove =
+document.getElementById("glove");
+
 
 const beam =
 document.getElementById("beam");
 
 
-let lastSize = 0;
+
+let sx=0;
+let sy=0;
+
+let oldSize=0;
 
 
-const hands = new Hands({
 
-locateFile:(file)=>{
+const hands =
+new Hands({
 
-return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+locateFile:file =>
 
-}
+`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
 
 });
+
 
 
 hands.setOptions({
 
 maxNumHands:1,
+
 modelComplexity:1,
+
 minDetectionConfidence:.7,
+
 minTrackingConfidence:.7
 
 });
 
 
 
-hands.onResults((results)=>{
+hands.onResults(result=>{
 
 
-if(results.multiHandLandmarks &&
-results.multiHandLandmarks.length>0){
+if(result.multiHandLandmarks &&
+result.multiHandLandmarks.length){
 
 
-let h =
-results.multiHandLandmarks[0];
+let h=result.multiHandLandmarks[0];
 
 
-let palm = h[9];
+let palm=h[9];
+
+let wrist=h[0];
 
 
-let x =
-(1-palm.x)*innerWidth;
 
-let y =
-palm.y*innerHeight;
+let x=(1-palm.x)*innerWidth;
 
-
-rep.style.display="block";
-
-rep.style.left=(x-60)+"px";
-rep.style.top=(y-60)+"px";
-  
-glove.style.display="block";
-
-glove.style.left=
-(x-110)+"px";
-
-glove.style.top=
-(y-110)+"px";
+let y=palm.y*innerHeight;
 
 
-// hand size detector
+
+// smoothing
+
+sx += (x-sx)*0.25;
+
+sy += (y-sy)*0.25;
+
+
 
 let size =
-Math.abs(h[0].y-h[12].y);
+Math.abs(wrist.y-h[12].y)*700;
 
 
-// hand coming closer = fire
 
-if(size-lastSize>0.03){
+glove.style.display="block";
+
+
+glove.style.left=
+(sx-size/2)+"px";
+
+
+glove.style.top=
+(sy-size/1.8)+"px";
+
+
+glove.style.transform=
+
+`scale(${size/220})`;
+
+
+
+
+// blast detection
+
+
+if(size-oldSize>15){
 
 
 beam.style.display="block";
 
-beam.style.left=x+"px";
 
-beam.style.top=y+"px";
+beam.style.left=sx+"px";
+
+beam.style.top=sy+"px";
 
 beam.style.width=
 innerWidth+"px";
 
 
-// shock ring
-
-let shock =
-document.createElement("div");
-
-shock.className="shock";
-
-shock.style.left=
-(x-100)+"px";
-
-shock.style.top=
-(y-100)+"px";
-
-
-document.body.appendChild(shock);
-
-
-setTimeout(()=>{
-
-shock.remove();
-
-},500);
-
-
 }
 
 else{
@@ -125,39 +122,54 @@ beam.style.display="none";
 }
 
 
-lastSize=size;
+oldSize=size;
 
 
 }
 
+
 else{
 
-rep.style.display="none";
-  
-beam.style.display="none";
-  
+
 glove.style.display="none";
 
+beam.style.display="none";
+
+
 }
+
 
 
 });
+
+
 
 
 
 const camera =
 new Camera(video,{
 
+
 onFrame:async()=>{
 
-await hands.send({image:video});
+
+await hands.send({
+
+image:video
+
+});
+
 
 },
 
+
 width:1280,
+
 height:720
 
+
 });
+
 
 
 camera.start();
