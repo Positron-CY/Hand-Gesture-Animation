@@ -2,11 +2,8 @@
 <html>
 
 <head>
-
-<title>Iron Man AR Mark 2</title>
-
+<title>Iron Man AR Mark 4</title>
 <link rel="stylesheet" href="style.css">
-
 </head>
 
 
@@ -16,21 +13,16 @@
 <video id="video" autoplay playsinline></video>
 
 
-
-<!-- JARVIS HUD -->
+<!-- HUD -->
 
 <div id="hud">
 
 <div class="title">
-MARK 85 SYSTEM
-</div>
-
-<div>
-STATUS: ONLINE
+MARK 4 ONLINE
 </div>
 
 <div id="mode">
-MODE: SCANNING
+SCANNING
 </div>
 
 <div id="energy">
@@ -47,18 +39,24 @@ ENERGY 0%
 
 
 
-<!-- glove -->
+<!-- IRON MAN GLOVE -->
 
 <div id="glove">
 
 
-<div class="finger f1"></div>
-<div class="finger f2"></div>
-<div class="finger f3"></div>
-<div class="finger f4"></div>
+<div class="finger" id="thumb"></div>
+
+<div class="finger" id="index"></div>
+
+<div class="finger" id="middle"></div>
+
+<div class="finger" id="ring"></div>
+
+<div class="finger" id="pinky"></div>
 
 
-<div id="hand">
+
+<div id="palm">
 
 <div id="reactor"></div>
 
@@ -69,7 +67,7 @@ ENERGY 0%
 
 
 
-<!-- effects -->
+<!-- weapons -->
 
 <div id="blast"></div>
 
