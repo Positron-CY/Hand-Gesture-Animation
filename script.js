@@ -1,3 +1,6 @@
+const glove =
+document.getElementById("glove");
+
 const video =
 document.getElementById("video");
 
@@ -58,6 +61,14 @@ rep.style.display="block";
 
 rep.style.left=(x-60)+"px";
 rep.style.top=(y-60)+"px";
+  
+glove.style.display="block";
+
+glove.style.left=
+(x-110)+"px";
+
+glove.style.top=
+(y-110)+"px";
 
 
 // hand size detector
@@ -122,8 +133,10 @@ lastSize=size;
 else{
 
 rep.style.display="none";
-
+  
 beam.style.display="none";
+  
+glove.style.display="none";
 
 }
 
